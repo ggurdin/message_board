@@ -3,21 +3,24 @@ const path = require('path');
 const app = express()
 const port = 3000
 require('dotenv').config()
-// const { auth } = require('express-openid-connect');
-// app.use(
-//   auth({
-//     issuerBaseURL: process.env.ISSUER_BASE_URL,
-//     baseURL: process.env.BASE_URL,
-//     clientID: process.env.CLIENT_ID,
-//     secret: process.env.SECRET
-//   })
-// );
+const { auth } = require('express-openid-connect');
+app.use(
+  auth({
+    issuerBaseURL: process.env.ISSUER_BASE_URL,
+    baseURL: process.env.BASE_URL,
+    clientID: process.env.CLIENT_ID,
+    secret: process.env.SECRET
+  })
+);
 
 app.use('/assets', express.static('assets'))
 
+// app.get('/', (req, res) => {
+//     res.sendFile(path.join(__dirname, '/index.html'));
+// })
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '/index.html'));
-})
+    res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out');
+});
 
 app.get('/home', (req, res) => {
     res.send("logged in!")
